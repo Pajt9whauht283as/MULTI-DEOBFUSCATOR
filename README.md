@@ -57,6 +57,11 @@ python deob.py setup     # fetches the Luau toolchain, builds the .NET engines
 python deob.py list      # shows every engine and its state
 ```
 
+Engine sources live in `_engines/<key>/` and are not bundled: the runner reports
+anything missing instead of pretending it is there, so the suite degrades to the
+engines you actually have. `layered` is built in and works out of the box. The
+expected layout per engine is in [docs/ENGINES.md](docs/ENGINES.md).
+
 `setup` is idempotent — run it again any time and it will only rebuild what is
 missing. Requirements:
 
