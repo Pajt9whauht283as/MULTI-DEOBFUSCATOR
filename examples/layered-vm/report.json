@@ -1,0 +1,12 @@
+{
+  "input": "D:\\asexy\\deobfuscators\\LiveBuildA.lua",
+  "bytes": 1284277,
+  "hooks": 164,
+  "recorded_calls": 119,
+  "values": 24,
+  "strings": 15,
+  "blobs": 2,
+  "stubs": true,
+  "exit": 1,
+  "error": "D:/asexy/deobfuscators/work/_live_LiveBuildA.luau:51: stack overflow\nstacktrace:\nD:/asexy/deobfuscators/work/_live_LiveBuildA.luau:51\nD:/asexy/deobfuscators/work/_live_LiveBuildA.luau:108"
+}

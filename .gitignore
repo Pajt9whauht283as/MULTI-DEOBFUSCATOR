@@ -1,0 +1,27 @@
+# engine sources (bring your own)
+_engines/
+
+# build artifacts and fetched toolchains
+_build/
+_tools/
+
+# run output
+out/
+out_live/
+work/
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# scratch
+*.log
+!examples/**/*.log

@@ -1,0 +1,18 @@
+[
+  {
+    "name": "xEhlV",
+    "file": "000_xEhlV.bin",
+    "size": 9152,
+    "printable": 0.207,
+    "bytecode": false,
+    "head": "d1 09 d9 1d ae dd d8 0c f2 a1 9d 96 63 bb a5 81 45 6c 80 1d ae dd d8 0c 03 16 73 96 af 44 82 a5 a2 34 27 1d ae dd d8 0c ad 95 9a 96 e1 77 8e a5"
+  },
+  {
+    "name": "ThxyW",
+    "file": "001_ThxyW.bin",
+    "size": 1601,
+    "printable": 0.676,
+    "bytecode": false,
+    "head": "0a 02 6f 73 02 83 95 6c dd 04 64 61 74 65 80 15 42 82 08 64 69 66 66 74 69 6d 65 00 17 ed 0b 49 6e 06 78 70 63 61 6c 6c ec 7e 8a d2 08 74 6f 73"
+  }
+]
