@@ -19,6 +19,7 @@ _engines/
 | `luraph_py` | `cli.py` | Python |
 | `ferib` | `deobfuscate.py` | Python |
 | `prometheus` | `bin/pdeobf.js` | Node |
+| `clyde` | `cli.js` | Node |
 | `hercules` | `deobfhercules.py` | Python |
 | `ironveil` | `index.js` | Node |
 | `luaobfuscator` | `index.js` | Node |

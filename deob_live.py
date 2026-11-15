@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# --discord.gg/Nkkq33F8GY--
 """deob_live - recover constants and strings from layered LuaU VM protectors.
 
 The samples this targets are generated as one enormous statement: an alias
@@ -40,9 +41,6 @@ OPENERS = {"function", "if", "do", "repeat"}
 CLOSERS = {"end", "until"}
 
 
-# --------------------------------------------------------------------------- #
-# tokenizer / block matching
-# --------------------------------------------------------------------------- #
 
 def tokens(src: str, start: int = 0):
     i, n = start, len(src)
@@ -110,9 +108,6 @@ def find_local_functions(src: str) -> list[tuple[str, int, int]]:
     return out
 
 
-# --------------------------------------------------------------------------- #
-# harness
-# --------------------------------------------------------------------------- #
 
 PRELUDE = r"""
 local __realbuf = buffer
@@ -290,7 +285,6 @@ def wrap_decryptor_calls(src: str) -> tuple[str, int]:
             continue
         spans.append((m.start(), end, name))
 
-    # keep only outermost spans
     spans.sort()
     outer: list[tuple[int, int, str]] = []
     for start, end, name in spans:
@@ -329,9 +323,6 @@ def run_luau(code: str, path: Path, timeout: float) -> tuple[int, str, str]:
         return -9, out or "", (err or "") + f"\n[timeout after {timeout}s]"
 
 
-# --------------------------------------------------------------------------- #
-# reporting
-# --------------------------------------------------------------------------- #
 
 PRINTABLE = set(range(32, 127)) | {9, 10, 13}
 

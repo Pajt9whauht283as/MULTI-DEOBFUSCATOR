@@ -1,3 +1,4 @@
+# --discord.gg/Nkkq33F8GY--
 """Extract a Lua function definition from source text by matching block ends.
 
 `for`/`while` open their block through their trailing `do`, so only

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# --discord.gg/Nkkq33F8GY--
 """deob - one front-end over every bundled Lua deobfuscator.
 
     python deob.py list                      what is installed, what is ready
@@ -33,9 +34,6 @@ TEXT_EXT = {".lua", ".luau", ".luac", ".txt"}
 PY = sys.executable or "python"
 
 
-# --------------------------------------------------------------------------- #
-# engine registry
-# --------------------------------------------------------------------------- #
 
 @dataclass
 class Engine:
@@ -229,6 +227,23 @@ _add(Engine(
 ))
 
 _add(Engine(
+    key="clyde",
+    name="Clyde Deobfuscator",
+    target="Clyde V2 - V6 (stack / register VM)",
+    kind="node",
+    root="clyde",
+    entry="cli.js",
+    args=["{in}", "-o", "{out}"],
+    markers=[
+        (r"clydeprotectionde\.cloud", "clyde protection domain"),
+        (r"clydeprotection", "clyde protection marker"),
+        (r"ClydeProtection Just like VMProtect", "clyde banner"),
+        (r"local _dK=\{", "clyde register VM shape"),
+    ],
+    notes="static, handles debug/normal/max and both VM families",
+))
+
+_add(Engine(
     key="layered",
     name="Layered LuaU VM (live constant recovery)",
     target="multi-layer LuaU VM protectors (alias header + base-N pools)",
@@ -245,14 +260,11 @@ _add(Engine(
 
 AUTO_ORDER = [
     "luraph15", "luraph14", "luraph_py", "ferib",
-    "prometheus", "hercules", "ironveil", "luaobfuscator",
+    "prometheus", "clyde", "hercules", "ironveil", "luaobfuscator",
     "fuscator77", "moonsec", "centurion", "layered",
 ]
 
 
-# --------------------------------------------------------------------------- #
-# helpers
-# --------------------------------------------------------------------------- #
 
 def engine_root(e: Engine) -> Path:
     return HOME if not e.root else VENDOR / e.root
@@ -302,7 +314,7 @@ def ensure_luau() -> tuple[bool, str]:
             blob = resp.read()
         with zipfile.ZipFile(io.BytesIO(blob)) as zf:
             zf.extractall(LUAU_DIR)
-    except Exception as exc:                            # noqa: BLE001
+    except Exception as exc:
         return False, f"download failed: {exc}"
     return exe.is_file(), str(exe)
 
@@ -343,7 +355,6 @@ def build_engine(e: Engine, verbose: bool = False) -> tuple[bool, str]:
     cmd = ["dotnet", "build", str(proj), "-c", "Release", "-o", str(outdir), "-nologo", "-v", "q"]
     r = subprocess.run(cmd, cwd=str(root), capture_output=True, text=True)
     if r.returncode != 0 and "NETSDK1045" in (r.stdout + r.stderr):
-        # newer target framework than the installed SDK: retarget a private copy
         work = BUILD / f"{e.key}_src"
         if work.exists():
             shutil.rmtree(work)
@@ -440,9 +451,6 @@ def pick_primary(before: dict[Path, float], outdir: Path, wanted: Path) -> Path 
     return max(new, key=rank_output)
 
 
-# --------------------------------------------------------------------------- #
-# detection
-# --------------------------------------------------------------------------- #
 
 def fingerprint(text: str) -> list[tuple[str, int, str]]:
     head = text[:200_000]
@@ -461,7 +469,6 @@ def fingerprint(text: str) -> list[tuple[str, int, str]]:
         if score:
             scored[e.key] = (score, why)
 
-    # shape-only fallbacks, no banner present
     if "luraph" not in scored and re.search(r"\[\d+\]\s*=\s*(?:bit32|buffer)\.\w+", head):
         scored.setdefault("ferib", (1, ["VM shape: opcode table over bit32/buffer"]))
     if "return setmetatable({" in low and "lph" in low:
@@ -477,31 +484,65 @@ def fingerprint(text: str) -> list[tuple[str, int, str]]:
     return out
 
 
-# --------------------------------------------------------------------------- #
-# commands
-# --------------------------------------------------------------------------- #
 
-def cmd_list(args) -> int:
-    print(f"vendor: {VENDOR}")
-    print(f"output: {OUTDIR}")
-    print()
-    head = f"{'key':<14} {'target':<44} {'lang':<8} {'status':<8} notes"
-    print(head)
-    print("-" * len(head))
-    ready = 0
-    for key in sorted(ENGINES, key=lambda k: AUTO_ORDER.index(k) if k in AUTO_ORDER else 99):
+def _paint(text: str, code: str) -> str:
+    if not sys.stdout.isatty() or os.environ.get("NO_COLOR"):
+        return text
+    return f"\x1b[{code}m{text}\x1b[0m"
+
+
+def _box_row(cells: list[str], widths: list[int]) -> str:
+    parts = [f" {c:<{w}} " for c, w in zip(cells, widths)]
+    return "\u2502" + "\u2502".join(parts) + "\u2502"
+
+
+def _box_rule(widths: list[int], left: str, mid: str, right: str) -> str:
+    return left + mid.join("\u2500" * (w + 2) for w in widths) + right
+
+
+def render_engines() -> list[str]:
+    order = sorted(ENGINES, key=lambda k: AUTO_ORDER.index(k) if k in AUTO_ORDER else 99)
+    rows = []
+    for key in order:
         e = ENGINES[key]
         ok, status = engine_ready(e)
-        ready += ok
-        print(f"{e.key:<14} {e.target:<44} {e.kind:<8} {(status if ok else 'missing'):<8} {e.notes}")
-        if not ok:
-            print(f"{'':<14} -> {status}")
-    print()
-    print(f"{ready}/{len(ENGINES)} engines ready")
+        rows.append([e.key, e.target, e.kind, "ready" if ok else "missing",
+                     "yes" if ok else "no", e.notes or "-", ok])
+
+    widths = [max(len(r[i]) for r in rows + [["key", "target", "stack", "status", "usable", "notes", True]])
+              for i in range(6)]
+    ready = sum(1 for r in rows if r[6])
+    total = len(rows)
+
+    title = f"MULTI-DEOBFUSCATOR   {total} engines   {ready} ready   {total - ready} missing"
+    inner = sum(w + 2 for w in widths) + len(widths) - 1
+    lines = [
+        "\u250c" + "\u2500" * (inner + 2) + "\u2510",
+        "\u2502 " + title.ljust(inner) + " \u2502",
+        "\u2514" + "\u2500" * (inner + 2) + "\u2518",
+        _box_rule(widths, "\u250c", "\u252c", "\u2510"),
+        _box_row(["KEY", "TARGET", "STACK", "STATUS", "USABLE", "NOTES"], widths),
+        _box_rule(widths, "\u251c", "\u253c", "\u2524"),
+    ]
+    for key, target, kind, status, usable, notes, ok in rows:
+        painted = _paint(status, "32" if ok else "33")
+        pad = len(status)
+        row = _box_row([key, target, kind, painted, usable, notes], widths + [0])
+        row = row.replace(f" {painted:<{widths[3]}} ", f" {painted}{' ' * (widths[3] - pad)} ")
+        lines.append(row)
+    lines.append(_box_rule(widths, "\u2514", "\u2534", "\u2518"))
+    lines.append("")
+    lines.append(f"  engines : {VENDOR}")
+    lines.append(f"  results : {OUTDIR}")
+    lines.append("  ready = usable now   missing = sources absent (docs/ENGINES.md)")
     if ready == 0:
-        print()
-        print("no engine sources yet - put each engine under _engines/<key>/ "
-              "(see docs/ENGINES.md)")
+        lines.append("  drop each engine into _engines/<key>/ then run: python deob.py setup")
+    return lines
+
+
+def cmd_list(args) -> int:
+    for line in render_engines():
+        print(line)
     return 0
 
 
@@ -552,7 +593,7 @@ def run_engine(e: Engine, src: Path, workdir: Path, timeout: float, verbose: boo
             code = -9
             out = (exc.stdout or "") if isinstance(exc.stdout, str) else ""
             err = f"timeout after {timeout}s"
-        except Exception as exc:                       # noqa: BLE001 - report, don't die
+        except Exception as exc:
             code, out, err = -1, "", f"{type(exc).__name__}: {exc}"
         log_parts.append(f"--- {mode} stdout ---\n{out}\n--- {mode} stderr ---\n{err}")
         mode_used = mode
@@ -567,7 +608,6 @@ def run_engine(e: Engine, src: Path, workdir: Path, timeout: float, verbose: boo
     primary = pick_primary(before, outdir, wanted)
     files = sorted(p for p in outdir.rglob("*") if p.is_file() and p.name != "_log.txt")
     produced = primary is not None and primary.stat().st_size > 0
-    # an engine that "succeeds" with a 15-byte stub on a 200 KB input has not succeeded
     tiny = produced and primary.stat().st_size < 64 and src.stat().st_size > 2048
     ok = produced and code == 0 and mode_used == "primary" and not tiny
     status = "ok" if ok else ("partial" if produced else "fail")
@@ -723,9 +763,11 @@ def cmd_selftest(args) -> int:
     return 0 if fails == 0 else 1
 
 
-# --------------------------------------------------------------------------- #
 
 def main(argv: list[str] | None = None) -> int:
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(prog="deob", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)

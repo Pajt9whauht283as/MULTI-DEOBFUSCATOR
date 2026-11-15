@@ -2,13 +2,13 @@
 
 # MULTI-DEOBFUSCATOR
 
-**One CLI. Twelve Lua / Luau deobfuscation engines. Drop a script, get the truth back.**
+**One CLI. Thirteen Lua / Luau deobfuscation engines. Drop a script, get the truth back.**
 
 Detect → dispatch → deobfuscate → dump everything.
 
 ![platform](https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20macos-2f81f7?style=flat-square)
 ![python](https://img.shields.io/badge/python-3.10%2B-3572A5?style=flat-square)
-![engines](https://img.shields.io/badge/engines-12-8957e5?style=flat-square)
+![engines](https://img.shields.io/badge/engines-13-8957e5?style=flat-square)
 ![status](https://img.shields.io/badge/status-active-2ea043?style=flat-square)
 ![license](https://img.shields.io/badge/license-MIT-f0b400?style=flat-square)
 
@@ -20,7 +20,7 @@ Detect → dispatch → deobfuscate → dump everything.
 
 Lua obfuscators multiply faster than anyone can keep a toolchain for. Every new
 protection drops with its own deobfuscator, its own invocation, its own output
-folder, its own failure mode. You end up with twelve half-remembered commands and
+folder, its own failure mode. You end up with thirteen half-remembered commands and
 a folder of scripts you cannot tell apart.
 
 MULTI-DEOBFUSCATOR collapses that into one command. It fingerprints the input
@@ -126,26 +126,53 @@ detected: nothing - brute forcing
 ---
 
 ## Engines
+## Engines
 
-Twelve engines, one interface. The `key` is what you pass to `-e`.
+Thirteen engines, one interface. The `key` is what you pass to `-e`.
 
-| key | what it eats | runtime | output |
-|---|---|---|---|
-| `luraph15` | Luraph v15.x | Node + Python devirt | source |
-| `luraph14` | Luraph v14.7 | Node + Python devirt | source |
-| `luraph_py` | Luraph 14.7 / 14.8 / 14.9, IronBrew1 module | Python | source |
-| `ferib` | LuaObfuscator.com (Ferib) VM scripts | Python | symbolic IR → Lua |
-| `prometheus` | Prometheus | Node | source |
-| `hercules` | Hercules 1.6.x – 2.0.1 | Python | decompiled / disassembly |
-| `ironveil` | Ironveil v1 | Node | source |
-| `luaobfuscator` | LuaObfuscator Chaotic Good / Chaotic Evil | Node | source |
-| `fuscator77` | 77fuscator 0.6.x | .NET 8 | stock `.luac` chunk |
-| `moonsec` | Moonsec v3 | .NET 8 | source |
-| `centurion` | Centurion / Luraph v6.x packs | Python + Luau | static lift, trace, maximal |
-| `layered` | multi-layer Luau VM protectors | Python + Luau | recovered constants + blobs |
+| # | key | protection | family | runtime | output |
+|---|---|---|---|---|---|
+| 01 | `luraph15` | Luraph v15.x | VM devirt | Node + Python | source |
+| 02 | `luraph14` | Luraph v14.7 | VM devirt | Node + Python | source |
+| 03 | `luraph_py` | Luraph 14.7 / 14.8 / 14.9 + IronBrew1 | VM devirt | Python | source |
+| 04 | `ferib` | LuaObfuscator.com (Ferib) | symbolic lift | Python | IR to Lua |
+| 05 | `prometheus` | Prometheus | interp + devirt | Node | source |
+| 06 | `clyde` | Clyde V2 - V6 | static lift | Node | source |
+| 07 | `hercules` | Hercules 1.6.x - 2.0.1 | decompiler | Python | decompiled / disasm |
+| 08 | `ironveil` | Ironveil v1 | bytecode lift | Node | source |
+| 09 | `luaobfuscator` | LuaObfuscator Chaotic Good / Evil | bytecode lift | Node | source |
+| 10 | `fuscator77` | 77fuscator 0.6.x | VM to luac | .NET 8 | stock `.luac` chunk |
+| 11 | `moonsec` | Moonsec v3 | bytecode rewriter | .NET 8 | source |
+| 12 | `centurion` | Centurion / Luraph v6.x packs | static + sandbox | Python + Luau | lift, trace, maximal |
+| 13 | `layered` | multi-layer Luau VM protectors | live constant recovery | Python + Luau | strings, pools, blobs |
 
-`layered` is the newest one and the one worth reading about: it does not guess
-the cipher, it runs the loader and records every plaintext it produces. See
+`deob list` renders the same inventory live, with readiness per engine:
+
+```text
++--------------------------------------------------------------+
+| MULTI-DEOBFUSCATOR   13 engines   13 ready   0 missing       |
++--------------------------------------------------------------+
++---------------+----------------------------------+--------+---------+
+| KEY           | TARGET                           | STACK  | STATUS  |
++---------------+----------------------------------+--------+---------+
+| luraph15      | Luraph v15.x                     | node   | ready   |
+| luraph14      | Luraph v14.7                     | node   | ready   |
+| luraph_py     | Luraph 14.7 / 14.8 / 14.9        | py     | ready   |
+| ferib         | LuaObfuscator.com (Ferib) VM     | py     | ready   |
+| prometheus    | Prometheus                       | node   | ready   |
+| clyde         | Clyde V2 - V6                    | node   | ready   |
+| hercules      | Hercules 1.6.x - 2.0.1           | py     | ready   |
+| ironveil      | Ironveil v1                      | node   | ready   |
+| luaobfuscator | LuaObfuscator Chaotic Good/Evil  | node   | ready   |
+| fuscator77    | 77fuscator 0.6.x                 | dotnet | ready   |
+| moonsec       | Moonsec v3                       | dotnet | ready   |
+| centurion     | Centurion / Luraph v6.x packs    | py     | ready   |
+| layered       | multi-layer Luau VM protectors   | py     | ready   |
++---------------+----------------------------------+--------+---------+
+```
+
+`layered` is the one worth reading about: it does not guess the cipher, it runs
+the loader and records every plaintext it produces. See
 [docs/ENGINES.md](docs/ENGINES.md#layered).
 
 ---
@@ -234,6 +261,24 @@ output    : out_live/target
 | engine exits non-zero with "not <obfuscator>" | wrong engine for that file — trust `deob detect`, or use `--all` |
 | output is 0 bytes but exit 0 | the engine failed silently; that is what `part` is for — read `_log.txt` |
 | a run hangs | pass `--timeout 120`; heavy devirtualisers legitimately take minutes |
+
+---
+
+## Community
+
+Need an engine that is not in the table? Hit a protection this suite does not
+know yet? Want a build tuned for your setup?
+
+**Join the server: https://discord.gg/Nkkq33F8GY**
+
+Inside, DM **`broskie_king.`** and say what you need — engine requests, samples
+that break, tooling that we do not ship, custom builds. That is the fastest
+route; issues on GitHub work too, but the server gets answered first.
+
+```
+discord  : https://discord.gg/Nkkq33F8GY
+dm       : broskie_king.
+```
 
 ---
 
