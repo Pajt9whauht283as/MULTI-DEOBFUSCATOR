@@ -1,0 +1,63 @@
+name: Engine request
+description: Ask for a new obfuscator to be supported, or for an existing engine to be improved.
+title: "[engine] "
+labels: ["engine-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Tell us what protection you are running into. The more concrete, the
+        faster it lands in the suite.
+
+  - type: input
+    id: protection
+    attributes:
+      label: Protection name
+      placeholder: Clyde / Moonsec v4 / something custom
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version or build
+      description: Exact version if you know it, otherwise the banner the script carries.
+      placeholder: v6.2, build 2025-11
+    validations:
+      required: false
+
+  - type: textarea
+    id: behaviour
+    attributes:
+      label: What it does
+      description: |
+        Constant pool style, string cipher, Zstd/LZW packing, loadstring, VM family
+        (stack or register), anti-tamper. Anything you already noticed.
+    validations:
+      required: true
+
+  - type: textarea
+    id: blocker
+    attributes:
+      label: What already fails
+      description: |
+        Which existing engine did you try and how did it fail? Paste the log tail.
+      render: shell
+    validations:
+      required: false
+
+  - type: input
+    id: sample
+    attributes:
+      label: Sample link
+      description: A protected script produced by that obfuscator makes this actionable.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before submitting
+      options:
+        - label: I ran `deob detect` on the sample and it is not covered by an existing engine.
+          required: true

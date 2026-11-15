@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Discord - fastest route
+    url: https://discord.gg/Nkkq33F8GY
+    about: Join and DM broskie_king. for engine requests, broken samples or custom builds.
+  - name: How engines are added
+    url: https://github.com/Pajt9whauht283as/MULTI-DEOBFUSCATOR/blob/main/docs/ENGINES.md
+    about: The layout and the ten-line registry entry an engine needs.

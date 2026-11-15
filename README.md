@@ -264,6 +264,32 @@ output    : out_live/target
 
 ---
 
+## Issues and requests
+
+This suite gets better from the scripts that break it. If an engine fails, a
+detection misses, or an output comes back wrong — **open an issue and it gets
+fixed**. If the obfuscator you are fighting is not in the table at all, **open an
+engine request** and tell us which one you want next.
+
+| what happened | where it goes |
+|---|---|
+| engine fails, output is garbage, CLI misbehaves | [Bug report](https://github.com/Pajt9whauht283as/MULTI-DEOBFUSCATOR/issues/new?template=bug_report.yml) |
+| you want a new obfuscator supported | [Engine request](https://github.com/Pajt9whauht283as/MULTI-DEOBFUSCATOR/issues/new?template=engine_request.yml) |
+| protection not detected at all | Bug report + the sample, that is enough |
+| quick question, custom build | [Discord](https://discord.gg/Nkkq33F8GY), DM `broskie_king.` |
+
+What makes a report land fast:
+
+1. the engine key and the exact command you ran;
+2. `out/<name>-<hash>/<engine>/_log.txt` and `report.json`;
+3. the sample, or a smaller one that still reproduces it;
+4. what you expected versus what came out.
+
+Engine requests go on a board that is read in order, so the ones with a sample
+attached move to the top. Nothing gets closed as "wontfix" without saying why.
+
+---
+
 ## Community
 
 Need an engine that is not in the table? Hit a protection this suite does not
@@ -273,7 +299,8 @@ know yet? Want a build tuned for your setup?
 
 Inside, DM **`broskie_king.`** and say what you need — engine requests, samples
 that break, tooling that we do not ship, custom builds. That is the fastest
-route; issues on GitHub work too, but the server gets answered first.
+route; issues on GitHub work too and are tracked properly, but the server gets
+answered first.
 
 ```
 discord  : https://discord.gg/Nkkq33F8GY

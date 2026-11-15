@@ -1,0 +1,78 @@
+name: Bug report
+description: An engine fails, produces junk, or the CLI misbehaves.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Read this before submitting: paste the engine name, the exact command and
+        the tail of `_log.txt`. A report without those cannot be reproduced.
+
+  - type: input
+    id: engine
+    attributes:
+      label: Engine
+      description: The `key` from `deob list`, or `cli` if the problem is the CLI itself.
+      placeholder: luraph15 / layered / cli
+    validations:
+      required: true
+
+  - type: input
+    id: command
+    attributes:
+      label: Command
+      placeholder: deob run target.lua -e luraph15 -v
+    validations:
+      required: true
+
+  - type: dropdown
+    id: status
+    attributes:
+      label: What did the run report?
+      options:
+        - ok, but the output is wrong
+        - part
+        - fail
+        - crash / traceback
+        - hung until timeout
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: What should have come out, and what came out instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: |
+        Attach or paste `out/<name>-<hash>/<engine>/_log.txt` and `report.json`.
+        Redact anything private before posting.
+      render: shell
+    validations:
+      required: true
+
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Output of `python --version`, `node --version`, `dotnet --version`, and your OS.
+      placeholder: python 3.12.4 / node 22.11 / dotnet 8.0.404 / Windows 11
+    validations:
+      required: true
+
+  - type: textarea
+    id: sample
+    attributes:
+      label: Sample
+      description: |
+        A link to the protected script (or a smaller one that reproduces it)
+        helps enormously. Do not paste private material inline.
+    validations:
+      required: false
